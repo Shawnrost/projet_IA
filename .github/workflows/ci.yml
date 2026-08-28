@@ -1,0 +1,67 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Tests et vérifications
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Installation de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Installation des dépendances
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Lint (flake8)
+        run: |
+          pip install flake8
+          flake8 src/ api/ --max-line-length=100 --exclude=migrations
+
+      - name: Tests Django
+        working-directory: ./api
+        run: |
+          python manage.py test
+
+  build:
+    name: Build de l'image Docker
+    runs-on: ubuntu-latest
+    needs: test
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+
+      - name: Build de l'image Docker
+        run: docker build -t churn-prediction-api:latest .
+
+  deploy:
+    name: Déploiement sur Hugging Face Spaces
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Récupération du code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Push vers Hugging Face Spaces
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          git remote add hf https://Shawnrost:${HF_TOKEN}@huggingface.co/spaces/Shawnrost/churn-prediction-api
+          git push hf main

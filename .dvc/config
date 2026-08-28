@@ -1,4 +1,4 @@
 [core]
     remote = storage
 ['remote "storage"']
-    url = gdrive://16IqiVtXigLPiPM46pqf37VF7rKRh4gLX
+    url = https://dagshub.com/andotianar11/projet_IA.dvc

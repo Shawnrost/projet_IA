@@ -1,0 +1,32 @@
+# Environnement virtuel
+venv/
+env/
+.venv/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+
+# Django
+api/db.sqlite3
+api/staticfiles/
+
+# Données (versionnées par DVC, pas par Git)
+data/raw/*.csv
+
+# DVC
+.dvc/cache
+.dvc/tmp
+
+# Variables d'environnement / secrets
+.env
+
+# Editeurs
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
